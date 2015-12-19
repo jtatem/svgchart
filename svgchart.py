@@ -1,3 +1,5 @@
+import time
+
 # Default values
 
 default_height = 250
@@ -15,6 +17,7 @@ default_graphtitle = ''
 default_textsize = 12
 default_tickinterval = 100
 default_legend_enable = True
+default_ts_mode = False
 
 # SVG string patterns
 
@@ -28,7 +31,7 @@ svg_rect_tag = '<rect x="{}" y="{}" width="{}" height="{}" stroke="{}" stroke-wi
 
 # Linechart takes a dict arranged as {'seriesname1': [(xval1, yval1), (xval2, yval2), ...], 'seriesname2': ...} and returns HTML SVG code for a line chart.  Several display options available, those should be self explanatory 
 
-def linechart(dataset, h=default_height, w=default_width, linew=default_linewidth, borderw=default_border_width, bordercolor=default_border_color, background=default_background, yvals=default_yvals, xvals=default_xvals, ylabel=default_ylabel, xlabel=default_xlabel, textcolor=default_textcolor, graphtitle=default_graphtitle, textsize=default_textsize, tickinterval=default_tickinterval, legend_enable=default_legend_enable):
+def linechart(dataset, h=default_height, w=default_width, linew=default_linewidth, borderw=default_border_width, bordercolor=default_border_color, background=default_background, yvals=default_yvals, xvals=default_xvals, ylabel=default_ylabel, xlabel=default_xlabel, textcolor=default_textcolor, graphtitle=default_graphtitle, textsize=default_textsize, tickinterval=default_tickinterval, legend_enable=default_legend_enable, ts_mode=default_ts_mode):
   linecolors=['#FF0000', '#00FF00', '#0000FF', '#FFF66', '#880000', '#FF00FF', '#008888', '#001188', '#FF5500', '#267326', '#80d5ff', '#990097']
   colorcycle = list(linecolors)
   output = svg_start_tag.format(h, w, '0', '0', w, h, svg_style_block.format(background, borderw, bordercolor))
@@ -45,6 +48,8 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
     y_bottom_offset += 20
   if ylabel != '':
     x_left_offset += 20
+    if x_right_offset == 0:
+      x_right_offset += 20
   if graphtitle != '':
     y_top_offset += 30
   if legend_enable:
@@ -68,14 +73,15 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
   output += '" />'
   if yvals:
     for yv in scaleddata['yaxis']:
-#      print(str(yv))
       output += svg_line_tag.format(x_left_offset, h - y_bottom_offset - yv[1], x_left_offset - 10, h - y_bottom_offset - yv[1], bordercolor, borderw)
       output += svg_vert_text_tag.format(x_left_offset - 25, h - y_bottom_offset - yv[1] + len(str(yv[0])) / 2 * 12, textsize, textcolor, 270, x_left_offset - 25, h - y_bottom_offset - yv[1] + len(str(yv[0])) / 2 * 12, yv[0])
   if xvals:
     for xv in scaleddata['xaxis']:
-#      print(str(xv))
       output += svg_line_tag.format(x_left_offset + xv[1], h - y_bottom_offset, x_left_offset + xv[1], h - y_bottom_offset + 10, bordercolor, borderw)
-      output += svg_text_tag.format(x_left_offset - 3 + xv[1] - (len(str(xv[0])) - 1) * 5, h - y_bottom_offset + 30, textsize, textcolor, xv[0])
+      if ts_mode:
+        output += svg_text_tag.format(x_left_offset - 3 + xv[1] - 20, h - y_bottom_offset + 30, textsize, textcolor, time.strftime('%H:%M', time.gmtime(xv[0])))
+      else:
+        output += svg_text_tag.format(x_left_offset - 3 + xv[1] - (len(str(xv[0])) - 1) * 5, h - y_bottom_offset + 30, textsize, textcolor, xv[0])
   if xlabel != '':
     output += svg_text_tag.format(x_left_offset + chartw / 2 - len(xlabel) / 2 * 5, charth + y_top_offset + 50, textsize, textcolor, xlabel)
   if ylabel != '':
@@ -166,10 +172,10 @@ def axisvals(ymin, ymax, xmin, xmax, h=default_height, w=default_width, target_i
   xpos_interval = float(w) / float(x_seg_count)
   ypos_interval = float(h) / float(y_seg_count)
   output = {'x':[], 'y':[]}
-  for i in range(1, x_seg_count + 1):
-    output['x'].append((int(i * xval_interval), int(i * xpos_interval)))
-  for i in range(1, y_seg_count + 1):
-    output['y'].append((int(i * yval_interval), int(i * ypos_interval)))
+  for i in range(0, x_seg_count + 1):
+    output['x'].append((int(i * xval_interval) + xmin, int(i * xpos_interval)))
+  for i in range(0, y_seg_count + 1):
+    output['y'].append((int(i * yval_interval) + ymin, int(i * ypos_interval)))
   return output
   
 
