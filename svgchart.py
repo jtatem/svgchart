@@ -24,11 +24,12 @@ svg_style_block = 'style="background:{};border:{}px solid {}"'
 svg_line_tag = '<line x1="{}" y1="{}" x2="{}" y2="{}" stroke="{}" stroke-width="{}" />'
 svg_text_tag = '<text x="{}" y="{}" font-family="Verdana", font-size="{}" fill="{}">{}</text>'
 svg_vert_text_tag = '<text x="{}" y="{}" font-family="Verdana", font-size="{}" fill="{}" transform="rotate({} {}, {})">{}</text>'
+svg_rect_tag = '<rect x="{}" y="{}" width="{}" height="{}" stroke="{}" stroke-width="{}" fill="{}" />'
 
 # Linechart takes a dict arranged as {'seriesname1': [(xval1, yval1), (xval2, yval2), ...], 'seriesname2': ...} and returns HTML SVG code for a line chart.  Several display options available, those should be self explanatory 
 
 def linechart(dataset, h=default_height, w=default_width, linew=default_linewidth, borderw=default_border_width, bordercolor=default_border_color, background=default_background, yvals=default_yvals, xvals=default_xvals, ylabel=default_ylabel, xlabel=default_xlabel, textcolor=default_textcolor, graphtitle=default_graphtitle, textsize=default_textsize, tickinterval=default_tickinterval, legend_enable=default_legend_enable):
-  linecolors=['#FF0000', '#00FF00', '#0000FF', '#000000', '#880000', '#FF00FF', '#008888', '#001188']
+  linecolors=['#FF0000', '#00FF00', '#0000FF', '#FFF66', '#880000', '#FF00FF', '#008888', '#001188', '#FF5500', '#267326', '#80d5ff', '#990097']
   colorcycle = list(linecolors)
   output = svg_start_tag.format(h, w, '0', '0', w, h, svg_style_block.format(background, borderw, bordercolor))
   x_left_offset = 0
@@ -46,13 +47,18 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
     x_left_offset += 20
   if graphtitle != '':
     y_top_offset += 30
+  if legend_enable:
+    y_bottom_offset += 40
   chartw = w - x_left_offset - x_right_offset
   charth = h - y_top_offset - y_bottom_offset
   scaleddata = scaler(dataset, h=charth, w=chartw, target_interval=tickinterval)
+  colormap = {}
   for series in sorted(scaleddata['series'].keys()):
     if len(colorcycle) == 0:
       colorcycle = list(linecolors)
-    output += '<polyline fill="none" stroke="{}" stroke-width="{}" points="'.format(colorcycle.pop(0), linew)
+    c = colorcycle.pop(0)
+    colormap[series] = c
+    output += '<polyline fill="none" stroke="{}" stroke-width="{}" points="'.format(c, linew)
     for p in scaleddata['series'][series]:
       output += '{},{} '.format(p[0] + x_left_offset, p[1] + y_top_offset)
     output += '" />'
@@ -71,11 +77,25 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
       output += svg_line_tag.format(x_left_offset + xv[1], h - y_bottom_offset, x_left_offset + xv[1], h - y_bottom_offset + 10, bordercolor, borderw)
       output += svg_text_tag.format(x_left_offset - 3 + xv[1] - (len(str(xv[0])) - 1) * 5, h - y_bottom_offset + 30, textsize, textcolor, xv[0])
   if xlabel != '':
-    output += svg_text_tag.format(x_left_offset + chartw / 2 - len(xlabel) / 2 * 5, h - 10, textsize, textcolor, xlabel)
+    output += svg_text_tag.format(x_left_offset + chartw / 2 - len(xlabel) / 2 * 5, charth + y_top_offset + 50, textsize, textcolor, xlabel)
   if ylabel != '':
     output += svg_vert_text_tag.format(15, charth / 2 + len(ylabel) / 2 * 5, textsize, textcolor, 270, 15, charth / 2 + len(ylabel) / 2 * 5, ylabel) 
   if graphtitle != '':
     output += svg_text_tag.format(w / 2 - len(graphtitle) / 2 * 5, 15, textsize + 2, textcolor, graphtitle)
+  if legend_enable:
+    longestname = max([len(x) for x in scaleddata['series'].keys()])
+    xpos = 10
+    ypos = h - 35
+    x_int = longestname * 15 
+    y_int = 20
+    for series in sorted(scaleddata['series'].keys()):
+      output += svg_rect_tag.format(xpos, ypos, 10, 10, colormap[series], 1, colormap[series])
+      output += svg_text_tag.format(xpos + 15, ypos + 7, textsize - 2, textcolor, series)
+      if xpos + x_int < w:
+        xpos += x_int
+      else:
+        xpos = 10
+        ypos = ypos + y_int 
   output += svg_end_tag
   return output
 
