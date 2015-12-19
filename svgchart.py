@@ -14,6 +14,7 @@ default_textcolor = 'black'
 default_graphtitle = ''
 default_textsize = 12
 default_tickinterval = 100
+default_legend_enable = True
 
 # SVG string patterns
 
@@ -26,7 +27,7 @@ svg_vert_text_tag = '<text x="{}" y="{}" font-family="Verdana", font-size="{}" f
 
 # Linechart takes a dict arranged as {'seriesname1': [(xval1, yval1), (xval2, yval2), ...], 'seriesname2': ...} and returns HTML SVG code for a line chart.  Several display options available, those should be self explanatory 
 
-def linechart(dataset, h=default_height, w=default_width, linew=default_linewidth, borderw=default_border_width, bordercolor=default_border_color, background=default_background, yvals=default_yvals, xvals=default_xvals, ylabel=default_ylabel, xlabel=default_xlabel, textcolor=default_textcolor, graphtitle=default_graphtitle, textsize=default_textsize, tickinterval=default_tickinterval):
+def linechart(dataset, h=default_height, w=default_width, linew=default_linewidth, borderw=default_border_width, bordercolor=default_border_color, background=default_background, yvals=default_yvals, xvals=default_xvals, ylabel=default_ylabel, xlabel=default_xlabel, textcolor=default_textcolor, graphtitle=default_graphtitle, textsize=default_textsize, tickinterval=default_tickinterval, legend_enable=default_legend_enable):
   linecolors=['#FF0000', '#00FF00', '#0000FF', '#000000', '#880000', '#FF00FF', '#008888', '#001188']
   colorcycle = list(linecolors)
   output = svg_start_tag.format(h, w, '0', '0', w, h, svg_style_block.format(background, borderw, bordercolor))
@@ -63,7 +64,7 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
     for yv in scaleddata['yaxis']:
 #      print(str(yv))
       output += svg_line_tag.format(x_left_offset, h - y_bottom_offset - yv[1], x_left_offset - 10, h - y_bottom_offset - yv[1], bordercolor, borderw)
-      output += svg_text_tag.format(x_left_offset - 35, h - y_bottom_offset - yv[1] + 5, textsize, textcolor, yv[0])
+      output += svg_vert_text_tag.format(x_left_offset - 25, h - y_bottom_offset - yv[1] + len(str(yv[0])) / 2 * 12, textsize, textcolor, 270, x_left_offset - 25, h - y_bottom_offset - yv[1] + len(str(yv[0])) / 2 * 12, yv[0])
   if xvals:
     for xv in scaleddata['xaxis']:
 #      print(str(xv))
