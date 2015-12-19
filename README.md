@@ -39,6 +39,7 @@ textsize: Font size (pt), default 12
 
 tickinterval: Interval between axis tickmarks, in pixels.  Default 100
 
+ts_mode: Interpret X axis values as a time series expressed in epoch seconds, X axis values will be displayed as HH:MM
 
 Notes and Caveats:
 
