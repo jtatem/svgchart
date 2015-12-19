@@ -10,3 +10,10 @@ The only required argument is dataset, which is a dict containing the data serie
 {'seriesname1': [(xval1, yval1), (xval2, yval2), ...], 'seriesname2': ...}
 
 All other arguments control the look/feel of the chart.  You get back the HTML-ized SVG that can then be included inline in other HTML.
+
+Notes and Caveats:
+
+- Only positive data works correctly - no negative numbers for X or Y values, I mainly wrote this for some data where negatives do not exist
+- Data points must be ordered along the X value
+- Text scaling is basically nonexistent beyond the textsize parameter, nothing adjusts around the font size of the text.  Choosing a large text size may have unpleasant results
+- No legend yet
