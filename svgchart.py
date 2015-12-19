@@ -1,3 +1,5 @@
+# Default values
+
 default_height = 250
 default_width = 600
 default_linewidth = 1
@@ -13,16 +15,16 @@ default_graphtitle = ''
 default_textsize = 12
 default_tickinterval = 100
 
-
-#svg_start_tag = '<svg viewbox="{} {} {} {}" style="background: white;border-left:3px solid #555;height:600">'
+# SVG string patterns
 
 svg_start_tag = '<svg height="{}" width="{}" viewbox="{} {} {} {}" {}>'
-
 svg_end_tag = '</svg>'
 svg_style_block = 'style="background:{};border:{}px solid {}"'
 svg_line_tag = '<line x1="{}" y1="{}" x2="{}" y2="{}" stroke="{}" stroke-width="{}" />'
 svg_text_tag = '<text x="{}" y="{}" font-family="Verdana", font-size="{}" fill="{}">{}</text>'
 svg_vert_text_tag = '<text x="{}" y="{}" font-family="Verdana", font-size="{}" fill="{}" transform="rotate({} {}, {})">{}</text>'
+
+# Linechart takes a dict arranged as {'seriesname1': [(xval1, yval1), (xval2, yval2), ...], 'seriesname2': ...} and returns HTML SVG code for a line chart.  Several display options available, those should be self explanatory 
 
 def linechart(dataset, h=default_height, w=default_width, linew=default_linewidth, borderw=default_border_width, bordercolor=default_border_color, background=default_background, yvals=default_yvals, xvals=default_xvals, ylabel=default_ylabel, xlabel=default_xlabel, textcolor=default_textcolor, graphtitle=default_graphtitle, textsize=default_textsize, tickinterval=default_tickinterval):
   linecolors=['#FF0000', '#00FF00', '#0000FF', '#000000', '#880000', '#FF00FF', '#008888', '#001188']
@@ -76,6 +78,7 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
   output += svg_end_tag
   return output
 
+# Scaler transforms the dataset into the positional coordinate range of the chart area.  It also calls axisval to generate the x and y axis tick values and positional scaling.  This is a little messy as we're just passing the axis tick target_interval through like some sort of jerk.  This probably means I have chosen poorly in how I arranged these functions and I should probably revisit the workflow.
 
 def scaler(dataset, h=default_height, w=default_width, x_left_offset=0, x_right_offset=0, y_top_offset=0, y_bottom_offset=0, target_interval=default_tickinterval):
   output = {'series':{}}
@@ -130,6 +133,8 @@ def scaler(dataset, h=default_height, w=default_width, x_left_offset=0, x_right_
     scaled_points.append((firstx, firsty))
     output['series'][series] = scaled_points
   return output
+
+# Axisvals generates the value and positions of the x and y axis tickmarks
 
 def axisvals(ymin, ymax, xmin, xmax, h=default_height, w=default_width, target_interval=default_tickinterval):
   x_seg_count = w / target_interval
