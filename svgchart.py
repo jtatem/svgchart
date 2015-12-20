@@ -95,7 +95,7 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
       if ts_mode:
         output += svg_text_tag.format(x_left_offset / 2 + xv[1] + (5 * textsize) / 10, belowgraph_pos + textsize + 10, textsize, textcolor, time.strftime('%H:%M', time.gmtime(xv[0])))
       else:
-        output += svg_text_tag.format(x_left_offset / 2 + xv[1] + (len('{0:.0f}'.format(xv[0])) * textsize) / 10, belowgraph_pos + textsize + 10, textsize, textcolor, '{0:.0f}'.format(xv[0]))
+        output += svg_text_tag.format(x_left_offset / 2 + xv[1] + (len('{0:.0f}'.format(xv[0])) * textsize / 2) / 10, belowgraph_pos + textsize + 10, textsize, textcolor, '{0:.0f}'.format(xv[0]))
     belowgraph_pos += textsize / 2 + textsize 
   if xlabel != '':
     output += svg_bold_text_tag.format(w / 2 - len(xlabel) * textsize / 4, belowgraph_pos + textsize + 5, textsize, textcolor, xlabel)
@@ -106,7 +106,8 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
     output += svg_bold_text_tag.format(w / 2 - len(graphtitle) * textsize / 4, textsize + 5, textsize, textcolor, graphtitle)
   if gridlines_enable:
     scaleddata['yaxis'].pop(0)
-    scaleddata['yaxis'].pop(-1)
+    if scaleddata['yaxis'][-1][1] >= charth:
+      scaleddata['yaxis'].pop(-1)
     scaleddata['xaxis'].pop(0)
     scaleddata['xaxis'].pop(-1)
     for yv in scaleddata['yaxis']:
