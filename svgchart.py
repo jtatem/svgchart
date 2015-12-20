@@ -92,7 +92,7 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
         output += svg_text_tag.format(x_left_offset / 2 + xv[1] + (5 * textsize) / 10, belowgraph_pos + textsize + 10, textsize, textcolor, time.strftime('%H:%M', time.gmtime(xv[0])))
       else:
         output += svg_text_tag.format(x_left_offset / 2 + xv[1] + (len('{0:.0f}'.format(xv[0])) * textsize) / 10, belowgraph_pos + textsize + 10, textsize, textcolor, '{0:.0f}'.format(xv[0]))
-    belowgraph_pos += textsize + 10
+    belowgraph_pos += textsize / 2 + textsize 
   if xlabel != '':
     output += svg_bold_text_tag.format(w / 2 - len(xlabel) * textsize / 4, belowgraph_pos + textsize + 5, textsize, textcolor, xlabel)
     belowgraph_pos += textsize + 5
@@ -113,7 +113,7 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
     y_int = textsize + 2 
     for series in sorted(scaleddata['series'].keys()):
       output += svg_rect_tag.format(xpos, ypos, 10, 10, colormap[series], 1, colormap[series])
-      output += svg_text_tag.format(xpos + 15, ypos + 7, textsize - 2, textcolor, series)
+      output += svg_text_tag.format(xpos + 13, ypos + 7, textsize - 1, textcolor, series)
       if xpos + x_int < w - x_int:
         xpos += x_int
       else:
