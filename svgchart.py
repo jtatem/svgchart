@@ -18,6 +18,10 @@ default_textsize = 12
 default_legend_enable = True
 default_ts_mode = False
 default_gridlines_enable = False
+default_ymin = None
+default_ymax = None
+default_xmin = None
+default_xmax = None
 
 # SVG string patterns
 
@@ -34,7 +38,7 @@ svg_rect_tag = '<rect x="{}" y="{}" width="{}" height="{}" stroke="{}" stroke-wi
 
 # Linechart takes a dict arranged as {'seriesname1': [(xval1, yval1), (xval2, yval2), ...], 'seriesname2': ...} and returns HTML SVG code for a line chart.  Several display options available, those should be self explanatory 
 
-def linechart(dataset, h=default_height, w=default_width, linew=default_linewidth, borderw=default_border_width, bordercolor=default_border_color, background=default_background, yvals=default_yvals, xvals=default_xvals, ylabel=default_ylabel, xlabel=default_xlabel, textcolor=default_textcolor, graphtitle=default_graphtitle, textsize=default_textsize, legend_enable=default_legend_enable, ts_mode=default_ts_mode, gridlines_enable=default_gridlines_enable):
+def linechart(dataset, h=default_height, w=default_width, linew=default_linewidth, borderw=default_border_width, bordercolor=default_border_color, background=default_background, yvals=default_yvals, xvals=default_xvals, ylabel=default_ylabel, xlabel=default_xlabel, textcolor=default_textcolor, graphtitle=default_graphtitle, textsize=default_textsize, legend_enable=default_legend_enable, ts_mode=default_ts_mode, gridlines_enable=default_gridlines_enable, ymin_force=default_ymin, ymax_force=default_ymax, xmin_force=default_xmin, xmax_force=default_xmax):
   linecolors=['#FF0000', '#00FF00', '#0000FF', '#FFF66', '#880000', '#FF00FF', '#008888', '#001188', '#FF5500', '#267326', '#80d5ff', '#990097']
   colorcycle = list(linecolors)
   output = svg_start_tag.format(h, w, '0', '0', w, h, svg_style_block.format(background, borderw, bordercolor))
@@ -63,7 +67,7 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
     y_bottom_offset += legend_rows * textsize * 2 
   chartw = w - x_left_offset - x_right_offset
   charth = h - y_top_offset - y_bottom_offset
-  scaleddata = scaler(dataset, h=charth, w=chartw)
+  scaleddata = scaler(dataset, h=charth, w=chartw, ymin_force=ymin_force, ymax_force=ymax_force, xmin_force=xmin_force, xmax_force=xmax_force)
   colormap = {}
   for series in sorted(scaleddata['series'].keys()):
     if len(colorcycle) == 0:
@@ -124,7 +128,7 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
 
 # Scaler transforms the dataset into the positional coordinate range of the chart area.  It also calls axisval to generate the x and y axis tick values and positional scaling.  This is a little messy as we're just passing the axis tick target_interval through like some sort of jerk.  This probably means I have chosen poorly in how I arranged these functions and I should probably revisit the workflow.
 
-def scaler(dataset, h=default_height, w=default_width, x_left_offset=0, x_right_offset=0, y_top_offset=0, y_bottom_offset=0):
+def scaler(dataset, h=default_height, w=default_width, ymin_force=default_ymin, ymax_force=default_ymax, xmin_force=default_xmin, xmax_force=default_xmax):
   output = {'series':{}}
   true_xmin = None
   true_ymin = None
@@ -151,6 +155,14 @@ def scaler(dataset, h=default_height, w=default_width, x_left_offset=0, x_right_
       true_ymax = ymax
     elif ymax > true_ymax:
       true_ymax = ymax
+  if ymin_force is not None:
+    true_ymin = ymin_force
+  if ymax_force is not None:
+    true_ymax = ymax_force
+  if xmin_force is not None:
+    true_xmin = xmin_force
+  if xmax_force is not None:
+    true_xmax = xmax_force
   output['xmin'] = true_xmin
   output['xmax'] = true_xmax
   output['ymin'] = true_ymin
