@@ -18,6 +18,7 @@ default_textsize = 12
 default_tickinterval = 100
 default_legend_enable = True
 default_ts_mode = False
+default_gridlines_enable = False
 
 # SVG string patterns
 
@@ -25,13 +26,14 @@ svg_start_tag = '<svg height="{}" width="{}" viewbox="{} {} {} {}" {}>'
 svg_end_tag = '</svg>'
 svg_style_block = 'style="background:{};border:{}px solid {}"'
 svg_line_tag = '<line x1="{}" y1="{}" x2="{}" y2="{}" stroke="{}" stroke-width="{}" />'
+svg_dotted_line_tag = '<line x1="{}" y1="{}" x2="{}" y2="{}" stroke="{}" stroke-width="{}" stroke-dasharray="5 5"/>'
 svg_text_tag = '<text x="{}" y="{}" font-family="Verdana", font-size="{}" fill="{}">{}</text>'
 svg_vert_text_tag = '<text x="{}" y="{}" font-family="Verdana", font-size="{}" fill="{}" transform="rotate({} {}, {})">{}</text>'
 svg_rect_tag = '<rect x="{}" y="{}" width="{}" height="{}" stroke="{}" stroke-width="{}" fill="{}" />'
 
 # Linechart takes a dict arranged as {'seriesname1': [(xval1, yval1), (xval2, yval2), ...], 'seriesname2': ...} and returns HTML SVG code for a line chart.  Several display options available, those should be self explanatory 
 
-def linechart(dataset, h=default_height, w=default_width, linew=default_linewidth, borderw=default_border_width, bordercolor=default_border_color, background=default_background, yvals=default_yvals, xvals=default_xvals, ylabel=default_ylabel, xlabel=default_xlabel, textcolor=default_textcolor, graphtitle=default_graphtitle, textsize=default_textsize, tickinterval=default_tickinterval, legend_enable=default_legend_enable, ts_mode=default_ts_mode):
+def linechart(dataset, h=default_height, w=default_width, linew=default_linewidth, borderw=default_border_width, bordercolor=default_border_color, background=default_background, yvals=default_yvals, xvals=default_xvals, ylabel=default_ylabel, xlabel=default_xlabel, textcolor=default_textcolor, graphtitle=default_graphtitle, textsize=default_textsize, tickinterval=default_tickinterval, legend_enable=default_legend_enable, ts_mode=default_ts_mode, gridlines_enable=default_gridlines_enable):
   linecolors=['#FF0000', '#00FF00', '#0000FF', '#FFF66', '#880000', '#FF00FF', '#008888', '#001188', '#FF5500', '#267326', '#80d5ff', '#990097']
   colorcycle = list(linecolors)
   output = svg_start_tag.format(h, w, '0', '0', w, h, svg_style_block.format(background, borderw, bordercolor))
@@ -82,6 +84,11 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
         output += svg_text_tag.format(x_left_offset - 3 + xv[1] - 20, h - y_bottom_offset + 30, textsize, textcolor, time.strftime('%H:%M', time.gmtime(xv[0])))
       else:
         output += svg_text_tag.format(x_left_offset - 3 + xv[1] - (len(str(xv[0])) - 1) * 5, h - y_bottom_offset + 30, textsize, textcolor, xv[0])
+  if gridlines_enable:
+    for yv in scaleddata['yaxis']:
+      output += svg_dotted_line_tag.format(x_left_offset, h - y_bottom_offset - yv[1], x_left_offset + chartw, h - y_bottom_offset - yv[1], 'lightgray', borderw)
+    for xv in scaleddata['xaxis']:
+      output += svg_dotted_line_tag.format(x_left_offset + xv[1], h - y_bottom_offset, x_left_offset + xv[1], y_top_offset, 'lightgray', borderw)
   if xlabel != '':
     output += svg_text_tag.format(x_left_offset + chartw / 2 - len(xlabel) / 2 * 5, charth + y_top_offset + 50, textsize, textcolor, xlabel)
   if ylabel != '':
