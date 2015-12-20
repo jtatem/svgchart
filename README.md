@@ -45,4 +45,4 @@ Notes and Caveats:
 
 - Only positive data works correctly - no negative numbers for X or Y values, I mainly wrote this for some data where negatives do not exist
 - Data points must be ordered along the X value
-- Text scaling is basically nonexistent beyond the textsize parameter, nothing adjusts around the font size of the text.  Choosing a large text size may have unpleasant results
+- Text scaling is basically nonexistent beyond the textsize parameter, nothing adjusts around the font size of the text.  Choosing a large text size may have unpleasant results < -- SOMEWHAT better now, have rudimentary auto-scaling with text size and positioning (mostly) works for sane values.

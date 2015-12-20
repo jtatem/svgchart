@@ -24,7 +24,7 @@ default_gridlines_enable = False
 svg_start_tag = '<svg height="{}" width="{}" viewbox="{} {} {} {}" {}>'
 svg_end_tag = '</svg>'
 svg_style_block = 'style="background:{};border:{}px solid {}"'
-svg_line_tag = '<line x1="{}" y1="{}" x2="{}" y2="{}" stroke="{}" stroke-width="{}" />'
+svg_line_tag = '<line x1="{}" y1="{}" x2="{}" y2="{}" stroke="{}" stroke-width="{}" fill="none"/>'
 svg_dotted_line_tag = '<line x1="{}" y1="{}" x2="{}" y2="{}" stroke="{}" stroke-width="{}" stroke-dasharray="5 5"/>'
 svg_text_tag = '<text x="{}" y="{}" font-family="Verdana", font-size="{}" fill="{}">{}</text>'
 svg_bold_text_tag = '<text x="{}" y="{}" font-family="Verdana", font-size="{}" fill="{}" font-weight="bold">{}</text>'
@@ -43,20 +43,24 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
   y_top_offset = 0
   x_right_offset = 0
   if xvals:
-    y_bottom_offset += 40
+    y_bottom_offset += textsize * 2 
   if yvals:
-    x_left_offset += 40
-    x_right_offset += 20
-  if xlabel != '':
-    y_bottom_offset += 20
-  if ylabel != '':
-    x_left_offset += 30
+    x_left_offset += textsize * 2
     if x_right_offset == 0:
-      x_right_offset += 20
+     x_right_offset += 25
+  if xlabel != '':
+    y_bottom_offset += textsize * 2 
+  if ylabel != '':
+    x_left_offset += textsize * 2
+    if x_right_offset == 0:
+      x_right_offset += 25
   if graphtitle != '':
-    y_top_offset += 30
+    y_top_offset += textsize * 2 
   if legend_enable:
-    y_bottom_offset += 40
+    longestlabel = max([len(x) for x in dataset.keys()]) * textsize / 2
+    legendcount_row = w / longestlabel
+    legend_rows = len(dataset.keys()) / legendcount_row + 1
+    y_bottom_offset += legend_rows * textsize * 2 
   chartw = w - x_left_offset - x_right_offset
   charth = h - y_top_offset - y_bottom_offset
   scaleddata = scaler(dataset, h=charth, w=chartw)
@@ -74,38 +78,43 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
   chartborderpoints = '{}, {} {}, {} {}, {} {}, {} {}, {}'.format(x_left_offset, y_top_offset, x_left_offset, h - y_bottom_offset, w - x_right_offset, h - y_bottom_offset, w - x_right_offset, y_top_offset, x_left_offset, y_top_offset)
   output += chartborderpoints
   output += '" />'
+  belowgraph_pos = charth + y_top_offset
+  leftgraph_pos = x_left_offset
   if yvals:
     for yv in scaleddata['yaxis']:
-      output += svg_line_tag.format(x_left_offset, h - y_bottom_offset - yv[1], x_left_offset - 10, h - y_bottom_offset - yv[1], bordercolor, borderw)
-      output += svg_vert_text_tag.format(x_left_offset - 25, h - y_bottom_offset - yv[1] + len('{0:.0f}'.format(yv[0])) / 2 + 5, textsize, textcolor, 270, x_left_offset - 25, h - y_bottom_offset - yv[1] + len('{0:.0f}'.format(yv[0])) / 2 + 5, '{0:.0f}'.format(yv[0]))
+      output += svg_line_tag.format(leftgraph_pos, h - y_bottom_offset - yv[1], leftgraph_pos - 10, h - y_bottom_offset - yv[1], bordercolor, borderw)
+      output += svg_vert_text_tag.format(leftgraph_pos - textsize, h - y_bottom_offset - yv[1] + len('{0:.0f}'.format(yv[0])) / 2 + textsize / 2, textsize, textcolor, 270, leftgraph_pos - textsize, h - y_bottom_offset - yv[1] + len('{0:.0f}'.format(yv[0])) / 2 + textsize / 2, '{0:.0f}'.format(yv[0]))
+    leftgraph_pos = leftgraph_pos - textsize * 2
   if xvals:
     for xv in scaleddata['xaxis']:
-      output += svg_line_tag.format(x_left_offset + xv[1], h - y_bottom_offset, x_left_offset + xv[1], h - y_bottom_offset + 10, bordercolor, borderw)
+      output += svg_line_tag.format(x_left_offset + xv[1], belowgraph_pos, x_left_offset + xv[1], belowgraph_pos + 10, bordercolor, borderw)
       if ts_mode:
-        output += svg_text_tag.format(x_left_offset - 3 + xv[1] - 20, h - y_bottom_offset + 30, textsize, textcolor, time.strftime('%H:%M', time.gmtime(xv[0])))
+        output += svg_text_tag.format(x_left_offset / 2 + xv[1] + (5 * textsize) / 10, belowgraph_pos + textsize + 10, textsize, textcolor, time.strftime('%H:%M', time.gmtime(xv[0])))
       else:
-        output += svg_text_tag.format(x_left_offset - 3 + xv[1] - (len(str(xv[0])) - 1) * 5, h - y_bottom_offset + 30, textsize, textcolor, xv[0])
+        output += svg_text_tag.format(x_left_offset / 2 + xv[1] + (len('{0:.0f}'.format(xv[0])) * textsize) / 10, belowgraph_pos + textsize + 10, textsize, textcolor, '{0:.0f}'.format(xv[0]))
+    belowgraph_pos += textsize + 10
+  if xlabel != '':
+    output += svg_bold_text_tag.format(w / 2 - len(xlabel) * textsize / 4, belowgraph_pos + textsize + 5, textsize, textcolor, xlabel)
+    belowgraph_pos += textsize + 5
+  if ylabel != '':
+    output += svg_bold_vert_text_tag.format(leftgraph_pos - textsize, (charth / 2 + len(ylabel) * textsize / 4) + y_top_offset, textsize, textcolor, 270, leftgraph_pos - textsize, (charth / 2 + len(ylabel) * textsize / 4) + y_top_offset, ylabel) 
+  if graphtitle != '':
+    output += svg_bold_text_tag.format(w / 2 - len(graphtitle) * textsize / 4, textsize + 5, textsize, textcolor, graphtitle)
   if gridlines_enable:
     for yv in scaleddata['yaxis']:
       output += svg_dotted_line_tag.format(x_left_offset, h - y_bottom_offset - yv[1], x_left_offset + chartw, h - y_bottom_offset - yv[1], 'lightgray', borderw)
     for xv in scaleddata['xaxis']:
       output += svg_dotted_line_tag.format(x_left_offset + xv[1], h - y_bottom_offset, x_left_offset + xv[1], y_top_offset, 'lightgray', borderw)
-  if xlabel != '':
-    output += svg_bold_text_tag.format(x_left_offset + chartw / 2 - len(xlabel) / 2 * 5, charth + y_top_offset + 50, textsize, textcolor, xlabel)
-  if ylabel != '':
-    output += svg_bold_vert_text_tag.format(15, h / 2 + len(ylabel) / 2 - 5, textsize, textcolor, 270, 15, h / 2 + len(ylabel) / 2 - 5, ylabel) 
-  if graphtitle != '':
-    output += svg_bold_text_tag.format(w / 2 - len(graphtitle) / 2 * 5, 15, textsize + 2, textcolor, graphtitle)
   if legend_enable:
     longestname = max([len(x) for x in scaleddata['series'].keys()])
     xpos = 10
-    ypos = h - 35
-    x_int = longestname * 15 
-    y_int = 20
+    ypos = belowgraph_pos + textsize 
+    x_int = longestname * textsize 
+    y_int = textsize + 2 
     for series in sorted(scaleddata['series'].keys()):
       output += svg_rect_tag.format(xpos, ypos, 10, 10, colormap[series], 1, colormap[series])
       output += svg_text_tag.format(xpos + 15, ypos + 7, textsize - 2, textcolor, series)
-      if xpos + x_int < w:
+      if xpos + x_int < w - x_int:
         xpos += x_int
       else:
         xpos = 10
