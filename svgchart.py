@@ -68,20 +68,20 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
   chartw = w - x_left_offset - x_right_offset
   charth = h - y_top_offset - y_bottom_offset
   scaleddata = scaler(dataset, h=charth, w=chartw, ymin_force=ymin_force, ymax_force=ymax_force, xmin_force=xmin_force, xmax_force=xmax_force)
-  colormap = {}
-  for series in sorted(scaleddata['series'].keys()):
-    if len(colorcycle) == 0:
-      colorcycle = list(linecolors)
-    c = colorcycle.pop(0)
-    colormap[series] = c
-    output += '<polyline fill="none" stroke="{}" stroke-width="{}" points="'.format(c, linew)
-    for p in scaleddata['series'][series]:
-      output += '{},{} '.format(p[0] + x_left_offset, p[1] + y_top_offset)
-    output += '" />'
-  output += '<polyline fill="none" stroke="{}" stroke-width="{}" points="'.format(bordercolor, borderw)
-  chartborderpoints = '{}, {} {}, {} {}, {} {}, {} {}, {}'.format(x_left_offset, y_top_offset, x_left_offset, h - y_bottom_offset, w - x_right_offset, h - y_bottom_offset, w - x_right_offset, y_top_offset, x_left_offset, y_top_offset)
-  output += chartborderpoints
-  output += '" />'
+#  colormap = {}
+#  for series in sorted(scaleddata['series'].keys()):
+#    if len(colorcycle) == 0:
+#      colorcycle = list(linecolors)
+#    c = colorcycle.pop(0)
+#    colormap[series] = c
+#    output += '<polyline fill="none" stroke="{}" stroke-width="{}" points="'.format(c, linew)
+#    for p in scaleddata['series'][series]:
+#      output += '{},{} '.format(p[0] + x_left_offset, p[1] + y_top_offset)
+#    output += '" />'
+#  output += '<polyline fill="none" stroke="{}" stroke-width="{}" points="'.format(bordercolor, borderw)
+#  chartborderpoints = '{}, {} {}, {} {}, {} {}, {} {}, {}'.format(x_left_offset, y_top_offset, x_left_offset, h - y_bottom_offset, w - x_right_offset, h - y_bottom_offset, w - x_right_offset, y_top_offset, x_left_offset, y_top_offset)
+#  output += chartborderpoints
+#  output += '" />'
   belowgraph_pos = charth + y_top_offset
   leftgraph_pos = x_left_offset
   if yvals:
@@ -114,6 +114,20 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
       output += svg_dotted_line_tag.format(x_left_offset, h - y_bottom_offset - yv[1], x_left_offset + chartw, h - y_bottom_offset - yv[1], 'lightgray', borderw)
     for xv in scaleddata['xaxis']:
       output += svg_dotted_line_tag.format(x_left_offset + xv[1], h - y_bottom_offset, x_left_offset + xv[1], y_top_offset, 'lightgray', borderw)
+  colormap = {}
+  for series in sorted(scaleddata['series'].keys()):
+    if len(colorcycle) == 0:
+      colorcycle = list(linecolors)
+    c = colorcycle.pop(0)
+    colormap[series] = c
+    output += '<polyline fill="none" stroke="{}" stroke-width="{}" points="'.format(c, linew)
+    for p in scaleddata['series'][series]:
+      output += '{},{} '.format(p[0] + x_left_offset, p[1] + y_top_offset)
+    output += '" />'
+  output += '<polyline fill="none" stroke="{}" stroke-width="{}" points="'.format(bordercolor, borderw)
+  chartborderpoints = '{}, {} {}, {} {}, {} {}, {} {}, {}'.format(x_left_offset, y_top_offset, x_left_offset, h - y_bottom_offset, w - x_right_offset, h - y_bottom_offset, w - x_right_offset, y_top_offset, x_left_offset, y_top_offset)
+  output += chartborderpoints
+  output += '" />'
   if legend_enable:
     longestname = max([len(x) for x in scaleddata['series'].keys()])
     xpos = 10
