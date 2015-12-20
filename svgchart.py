@@ -27,7 +27,9 @@ svg_style_block = 'style="background:{};border:{}px solid {}"'
 svg_line_tag = '<line x1="{}" y1="{}" x2="{}" y2="{}" stroke="{}" stroke-width="{}" />'
 svg_dotted_line_tag = '<line x1="{}" y1="{}" x2="{}" y2="{}" stroke="{}" stroke-width="{}" stroke-dasharray="5 5"/>'
 svg_text_tag = '<text x="{}" y="{}" font-family="Verdana", font-size="{}" fill="{}">{}</text>'
+svg_bold_text_tag = '<text x="{}" y="{}" font-family="Verdana", font-size="{}" fill="{}" font-weight="bold">{}</text>'
 svg_vert_text_tag = '<text x="{}" y="{}" font-family="Verdana", font-size="{}" fill="{}" transform="rotate({} {}, {})">{}</text>'
+svg_bold_vert_text_tag = '<text x="{}" y="{}" font-family="Verdana", font-size="{}" fill="{}" transform="rotate({} {}, {})" font-weight="bold">{}</text>'
 svg_rect_tag = '<rect x="{}" y="{}" width="{}" height="{}" stroke="{}" stroke-width="{}" fill="{}" />'
 
 # Linechart takes a dict arranged as {'seriesname1': [(xval1, yval1), (xval2, yval2), ...], 'seriesname2': ...} and returns HTML SVG code for a line chart.  Several display options available, those should be self explanatory 
@@ -48,7 +50,7 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
   if xlabel != '':
     y_bottom_offset += 20
   if ylabel != '':
-    x_left_offset += 20
+    x_left_offset += 30
     if x_right_offset == 0:
       x_right_offset += 20
   if graphtitle != '':
@@ -89,11 +91,11 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
     for xv in scaleddata['xaxis']:
       output += svg_dotted_line_tag.format(x_left_offset + xv[1], h - y_bottom_offset, x_left_offset + xv[1], y_top_offset, 'lightgray', borderw)
   if xlabel != '':
-    output += svg_text_tag.format(x_left_offset + chartw / 2 - len(xlabel) / 2 * 5, charth + y_top_offset + 50, textsize, textcolor, xlabel)
+    output += svg_bold_text_tag.format(x_left_offset + chartw / 2 - len(xlabel) / 2 * 5, charth + y_top_offset + 50, textsize, textcolor, xlabel)
   if ylabel != '':
-    output += svg_vert_text_tag.format(15, h / 2 + len(ylabel) / 2 - 5, textsize, textcolor, 270, 15, h / 2 + len(ylabel) / 2 - 5, ylabel) 
+    output += svg_bold_vert_text_tag.format(15, h / 2 + len(ylabel) / 2 - 5, textsize, textcolor, 270, 15, h / 2 + len(ylabel) / 2 - 5, ylabel) 
   if graphtitle != '':
-    output += svg_text_tag.format(w / 2 - len(graphtitle) / 2 * 5, 15, textsize + 2, textcolor, graphtitle)
+    output += svg_bold_text_tag.format(w / 2 - len(graphtitle) / 2 * 5, 15, textsize + 2, textcolor, graphtitle)
   if legend_enable:
     longestname = max([len(x) for x in scaleddata['series'].keys()])
     xpos = 10
