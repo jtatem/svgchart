@@ -105,6 +105,10 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
   if graphtitle != '':
     output += svg_bold_text_tag.format(w / 2 - len(graphtitle) * textsize / 4, textsize + 5, textsize, textcolor, graphtitle)
   if gridlines_enable:
+    scaleddata['yaxis'].pop(0)
+    scaleddata['yaxis'].pop(-1)
+    scaleddata['xaxis'].pop(0)
+    scaleddata['xaxis'].pop(-1)
     for yv in scaleddata['yaxis']:
       output += svg_dotted_line_tag.format(x_left_offset, h - y_bottom_offset - yv[1], x_left_offset + chartw, h - y_bottom_offset - yv[1], 'lightgray', borderw)
     for xv in scaleddata['xaxis']:
