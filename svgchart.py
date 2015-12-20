@@ -61,10 +61,10 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
   if graphtitle != '':
     y_top_offset += textsize * 2 
   if legend_enable:
-    longestlabel = max([len(x) for x in dataset.keys()]) * textsize / 2
+    longestlabel = max([len(x) for x in dataset.keys()]) * textsize 
     legendcount_row = w / longestlabel
     legend_rows = len(dataset.keys()) / legendcount_row + 1
-    y_bottom_offset += legend_rows * textsize * 2 
+    y_bottom_offset += legend_rows * (textsize + textsize / 2)
   chartw = w - x_left_offset - x_right_offset
   charth = h - y_top_offset - y_bottom_offset
   scaleddata = scaler(dataset, h=charth, w=chartw, ymin_force=ymin_force, ymax_force=ymax_force, xmin_force=xmin_force, xmax_force=xmax_force)
@@ -112,12 +112,12 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
   if legend_enable:
     longestname = max([len(x) for x in scaleddata['series'].keys()])
     xpos = 10
-    ypos = belowgraph_pos + textsize 
+    ypos = belowgraph_pos + textsize   
     x_int = longestname * textsize 
-    y_int = textsize + 2 
+    y_int = textsize + textsize / 2 - 2 
     for series in sorted(scaleddata['series'].keys()):
-      output += svg_rect_tag.format(xpos, ypos, 10, 10, colormap[series], 1, colormap[series])
-      output += svg_text_tag.format(xpos + 13, ypos + 7, textsize - 1, textcolor, series)
+      output += svg_rect_tag.format(xpos, ypos, textsize / 2 + 2, textsize / 2 + 2, colormap[series], 1, colormap[series])
+      output += svg_text_tag.format(xpos + textsize , ypos + textsize / 2 + 2, textsize - 1, textcolor, series)
       if xpos + x_int < w - x_int:
         xpos += x_int
       else:
@@ -211,9 +211,9 @@ def axisvals(ymin, ymax, xmin, xmax, h=default_height, w=default_width):
   ypos_interval = float(h) / float(y_seg_count)
   output = {'x':[], 'y':[]}
   for i in range(0, int(x_seg_count) + 1):
-    output['x'].append((int(i * xval_interval) + xmin + 1, int(i * xpos_interval)))
+    output['x'].append((int(i * xval_interval) + xmin, int(i * xpos_interval)))
   for i in range(0, int(y_seg_count) + 1):
-    output['y'].append((int(i * yval_interval) + ymin + 1, int(i * ypos_interval)))
+    output['y'].append((int(i * yval_interval) + ymin, int(i * ypos_interval)))
   return output
   
 
