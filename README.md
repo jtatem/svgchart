@@ -37,9 +37,9 @@ graphtitle: String to show at the top of the graph, set to '' (default) to disab
 
 textsize: Font size (pt), default 12
 
-tickinterval: Interval between axis tickmarks, in pixels.  Default 100
-
 ts_mode: Interpret X axis values as a time series expressed in epoch seconds, X axis values will be displayed as HH:MM
+
+gridline_enable: Adds light gray dashed gridlines to the chart
 
 Notes and Caveats:
 
