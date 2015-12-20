@@ -75,7 +75,7 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
   if yvals:
     for yv in scaleddata['yaxis']:
       output += svg_line_tag.format(x_left_offset, h - y_bottom_offset - yv[1], x_left_offset - 10, h - y_bottom_offset - yv[1], bordercolor, borderw)
-      output += svg_vert_text_tag.format(x_left_offset - 25, h - y_bottom_offset - yv[1] + len(str(yv[0])) / 2 * 12, textsize, textcolor, 270, x_left_offset - 25, h - y_bottom_offset - yv[1] + len(str(yv[0])) / 2 * 12, yv[0])
+      output += svg_vert_text_tag.format(x_left_offset - 25, h - y_bottom_offset - yv[1] + len('{0:.0f}'.format(yv[0])) / 2 + 5, textsize, textcolor, 270, x_left_offset - 25, h - y_bottom_offset - yv[1] + len('{0:.0f}'.format(yv[0])) / 2 + 5, '{0:.0f}'.format(yv[0]))
   if xvals:
     for xv in scaleddata['xaxis']:
       output += svg_line_tag.format(x_left_offset + xv[1], h - y_bottom_offset, x_left_offset + xv[1], h - y_bottom_offset + 10, bordercolor, borderw)
@@ -91,7 +91,7 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
   if xlabel != '':
     output += svg_text_tag.format(x_left_offset + chartw / 2 - len(xlabel) / 2 * 5, charth + y_top_offset + 50, textsize, textcolor, xlabel)
   if ylabel != '':
-    output += svg_vert_text_tag.format(15, charth / 2 + len(ylabel) / 2 * 5, textsize, textcolor, 270, 15, charth / 2 + len(ylabel) / 2 * 5, ylabel) 
+    output += svg_vert_text_tag.format(15, h / 2 + len(ylabel) / 2 - 5, textsize, textcolor, 270, 15, h / 2 + len(ylabel) / 2 - 5, ylabel) 
   if graphtitle != '':
     output += svg_text_tag.format(w / 2 - len(graphtitle) / 2 * 5, 15, textsize + 2, textcolor, graphtitle)
   if legend_enable:
@@ -175,22 +175,22 @@ def axisvals(ymin, ymax, xmin, xmax, h=default_height, w=default_width):
   while xspan >= 10:
     xspan = xspan / 10
     xmag += 1
-  x_seg_count = (xmax - xmin) / 10 ** xmag  
+  x_seg_count = (xmax - xmin) / 10 ** xmag + 1  
   yspan = ymax - ymin
   ymag = 0
   while yspan >= 10:
     yspan = yspan / 10
     ymag += 1
-  y_seg_count = (ymax - ymin) / 10 ** ymag
+  y_seg_count = (ymax - ymin) / 10 ** ymag + 1
   xval_interval = float(xmax - xmin) / float(x_seg_count)
   yval_interval = float(ymax - ymin) / float(y_seg_count)
   xpos_interval = float(w) / float(x_seg_count)
   ypos_interval = float(h) / float(y_seg_count)
   output = {'x':[], 'y':[]}
   for i in range(0, int(x_seg_count) + 1):
-    output['x'].append((int(i * xval_interval) + xmin, int(i * xpos_interval)))
+    output['x'].append((int(i * xval_interval) + xmin + 1, int(i * xpos_interval)))
   for i in range(0, int(y_seg_count) + 1):
-    output['y'].append((int(i * yval_interval) + ymin, int(i * ypos_interval)))
+    output['y'].append((int(i * yval_interval) + ymin + 1, int(i * ypos_interval)))
   return output
   
 
