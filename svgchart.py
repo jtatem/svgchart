@@ -51,13 +51,13 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
   if yvals:
     x_left_offset += textsize * 2
     if x_right_offset == 0:
-     x_right_offset += 25
+     x_right_offset += textsize * 2 
   if xlabel != '':
     y_bottom_offset += textsize * 2 
   if ylabel != '':
     x_left_offset += textsize * 2
     if x_right_offset == 0:
-      x_right_offset += 25
+      x_right_offset += textsize * 2
   if graphtitle != '':
     y_top_offset += textsize * 2 
   if legend_enable:
@@ -198,13 +198,19 @@ def axisvals(ymin, ymax, xmin, xmax, h=default_height, w=default_width):
   while xspan >= 10:
     xspan = xspan / 10
     xmag += 1
-  x_seg_count = (xmax - xmin) / 10 ** xmag + 1  
+  if (xmax - xmin) / 10 ** xmag + 1 < 5:
+    x_seg_count = 5
+  else:
+    x_seg_count = (xmax - xmin) / 10 ** xmag + 1  
   yspan = ymax - ymin
   ymag = 0
   while yspan >= 10:
     yspan = yspan / 10
     ymag += 1
-  y_seg_count = (ymax - ymin) / 10 ** ymag + 1
+  if (ymax - ymin) / 10 ** ymag + 1 < 5:
+    y_seg_count = 5
+  else:
+    y_seg_count = (ymax - ymin) / 10 ** ymag + 1
   xval_interval = float(xmax - xmin) / float(x_seg_count)
   yval_interval = float(ymax - ymin) / float(y_seg_count)
   xpos_interval = float(w) / float(x_seg_count)
