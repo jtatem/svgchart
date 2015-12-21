@@ -22,6 +22,7 @@ default_ymin = None
 default_ymax = None
 default_xmin = None
 default_xmax = None
+default_gridlinecolor = '#888888'
 
 # SVG string patterns
 
@@ -38,9 +39,10 @@ svg_rect_tag = '<rect x="{}" y="{}" width="{}" height="{}" stroke="{}" stroke-wi
 
 # Linechart takes a dict arranged as {'seriesname1': [(xval1, yval1), (xval2, yval2), ...], 'seriesname2': ...} and returns HTML SVG code for a line chart.  Several display options available, those should be self explanatory 
 
-def linechart(dataset, h=default_height, w=default_width, linew=default_linewidth, borderw=default_border_width, bordercolor=default_border_color, background=default_background, yvals=default_yvals, xvals=default_xvals, ylabel=default_ylabel, xlabel=default_xlabel, textcolor=default_textcolor, graphtitle=default_graphtitle, textsize=default_textsize, legend_enable=default_legend_enable, ts_mode=default_ts_mode, gridlines_enable=default_gridlines_enable, ymin_force=default_ymin, ymax_force=default_ymax, xmin_force=default_xmin, xmax_force=default_xmax):
+def linechart(dataset, h=default_height, w=default_width, linew=default_linewidth, borderw=default_border_width, bordercolor=default_border_color, background=default_background, yvals=default_yvals, xvals=default_xvals, ylabel=default_ylabel, xlabel=default_xlabel, textcolor=default_textcolor, graphtitle=default_graphtitle, textsize=default_textsize, legend_enable=default_legend_enable, ts_mode=default_ts_mode, gridlines_enable=default_gridlines_enable, ymin_force=default_ymin, ymax_force=default_ymax, xmin_force=default_xmin, xmax_force=default_xmax, gridlinecolor=default_gridlinecolor):
   linecolors=['#FF0000', '#00FF00', '#0000FF', '#FFAA66', '#880000', '#FF00FF', '#008888', '#001188', '#FF5500', '#267326', '#80d5ff', '#990097']
   colorcycle = list(linecolors)
+  borderw += 1
   output = svg_start_tag.format(h, w, '0', '0', w, h, svg_style_block.format(background, borderw, bordercolor))
   x_left_offset = 0
   y_bottom_offset = 0
@@ -68,20 +70,6 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
   chartw = w - x_left_offset - x_right_offset
   charth = h - y_top_offset - y_bottom_offset
   scaleddata = scaler(dataset, h=charth, w=chartw, ymin_force=ymin_force, ymax_force=ymax_force, xmin_force=xmin_force, xmax_force=xmax_force)
-#  colormap = {}
-#  for series in sorted(scaleddata['series'].keys()):
-#    if len(colorcycle) == 0:
-#      colorcycle = list(linecolors)
-#    c = colorcycle.pop(0)
-#    colormap[series] = c
-#    output += '<polyline fill="none" stroke="{}" stroke-width="{}" points="'.format(c, linew)
-#    for p in scaleddata['series'][series]:
-#      output += '{},{} '.format(p[0] + x_left_offset, p[1] + y_top_offset)
-#    output += '" />'
-#  output += '<polyline fill="none" stroke="{}" stroke-width="{}" points="'.format(bordercolor, borderw)
-#  chartborderpoints = '{}, {} {}, {} {}, {} {}, {} {}, {}'.format(x_left_offset, y_top_offset, x_left_offset, h - y_bottom_offset, w - x_right_offset, h - y_bottom_offset, w - x_right_offset, y_top_offset, x_left_offset, y_top_offset)
-#  output += chartborderpoints
-#  output += '" />'
   belowgraph_pos = charth + y_top_offset
   leftgraph_pos = x_left_offset
   if yvals:
@@ -111,9 +99,9 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
     scaleddata['xaxis'].pop(0)
     scaleddata['xaxis'].pop(-1)
     for yv in scaleddata['yaxis']:
-      output += svg_dotted_line_tag.format(x_left_offset, h - y_bottom_offset - yv[1], x_left_offset + chartw, h - y_bottom_offset - yv[1], 'lightgray', borderw)
+      output += svg_dotted_line_tag.format(x_left_offset, h - y_bottom_offset - yv[1], x_left_offset + chartw, h - y_bottom_offset - yv[1], gridlinecolor, borderw)
     for xv in scaleddata['xaxis']:
-      output += svg_dotted_line_tag.format(x_left_offset + xv[1], h - y_bottom_offset, x_left_offset + xv[1], y_top_offset, 'lightgray', borderw)
+      output += svg_dotted_line_tag.format(x_left_offset + xv[1], h - y_bottom_offset, x_left_offset + xv[1], y_top_offset, gridlinecolor, borderw)
   colormap = {}
   for series in sorted(scaleddata['series'].keys()):
     if len(colorcycle) == 0:
@@ -125,7 +113,7 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
       output += '{},{} '.format(p[0] + x_left_offset, p[1] + y_top_offset)
     output += '" />'
   output += '<polyline fill="none" stroke="{}" stroke-width="{}" points="'.format(bordercolor, borderw)
-  chartborderpoints = '{}, {} {}, {} {}, {} {}, {} {}, {}'.format(x_left_offset, y_top_offset, x_left_offset, h - y_bottom_offset, w - x_right_offset, h - y_bottom_offset, w - x_right_offset, y_top_offset, x_left_offset, y_top_offset)
+  chartborderpoints = '{},{} {},{} {},{} {},{} {},{}'.format(x_left_offset, y_top_offset, x_left_offset, h - y_bottom_offset, w - x_right_offset, h - y_bottom_offset, w - x_right_offset, y_top_offset, x_left_offset, y_top_offset)
   output += chartborderpoints
   output += '" />'
   if legend_enable:
