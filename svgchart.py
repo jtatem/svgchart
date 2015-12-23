@@ -63,7 +63,7 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
   if graphtitle != '':
     y_top_offset += textsize * 2 
   if legend_enable:
-    longestlabel = max([len(x) for x in dataset.keys()]) * textsize 
+    longestlabel = max([len(str(x)) for x in dataset.keys()]) * textsize 
     legendcount_row = w / longestlabel
     legend_rows = len(dataset.keys()) / legendcount_row + 1
     y_bottom_offset += legend_rows * (textsize + textsize / 2)
@@ -117,7 +117,7 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
   output += chartborderpoints
   output += '" />'
   if legend_enable:
-    longestname = max([len(x) for x in scaleddata['series'].keys()])
+    longestname = longestlabel / textsize 
     xpos = 10
     ypos = belowgraph_pos + textsize   
     x_int = longestname * textsize 
@@ -184,8 +184,18 @@ def scaler(dataset, h=default_height, w=default_width, ymin_force=default_ymin, 
     firstx = None
     firsty = None
     for p in dataset[series]:
-      newx = int((float(p[0] - true_xmin) * xscale))
-      newy = h - int((float(p[1] - true_ymin) * yscale))
+      if p[0] >= true_xmin and p[0] <= true_xmax:
+        newx = int((float(p[0] - true_xmin) * xscale))
+      elif p[0] < true_xmin:
+        newx = int(float(true_xmin) * xscale)
+      else:
+        newx = int(float(true_xmax) * xscale)
+      if p[1] >= true_ymin and p[1] <= true_ymax:
+        newy = h - int((float(p[1] - true_ymin) * yscale))
+      elif p[1] < true_ymin:
+        newy = h - int(float(true_ymin) * yscale)
+      else:
+        newy = h - int(float(true_ymax) * yscale)
       if firstx == None:
         firstx = newx
       if firsty == None:
