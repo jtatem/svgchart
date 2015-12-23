@@ -69,7 +69,7 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
     y_bottom_offset += legend_rows * (textsize + textsize / 2)
   chartw = w - x_left_offset - x_right_offset
   charth = h - y_top_offset - y_bottom_offset
-  scaleddata = scaler(dataset, h=charth, w=chartw, ymin_force=ymin_force, ymax_force=ymax_force, xmin_force=xmin_force, xmax_force=xmax_force)
+  scaleddata = scaler(dataset, h=charth - 2, w=chartw - 2, ymin_force=ymin_force, ymax_force=ymax_force, xmin_force=xmin_force, xmax_force=xmax_force)
   belowgraph_pos = charth + y_top_offset
   leftgraph_pos = x_left_offset
   if yvals:
@@ -97,7 +97,7 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
     if scaleddata['yaxis'][-1][1] >= charth:
       scaleddata['yaxis'].pop(-1)
     scaleddata['xaxis'].pop(0)
-    scaleddata['xaxis'].pop(-1)
+    #scaleddata['xaxis'].pop(-1)
     for yv in scaleddata['yaxis']:
       output += svg_dotted_line_tag.format(x_left_offset, h - y_bottom_offset - yv[1], x_left_offset + chartw, h - y_bottom_offset - yv[1], gridlinecolor, borderw)
     for xv in scaleddata['xaxis']:
@@ -110,10 +110,10 @@ def linechart(dataset, h=default_height, w=default_width, linew=default_linewidt
     colormap[series] = c
     output += '<polyline fill="none" stroke="{}" stroke-width="{}" points="'.format(c, linew)
     for p in scaleddata['series'][series]:
-      output += '{},{} '.format(p[0] + x_left_offset, p[1] + y_top_offset)
+      output += '{},{} '.format(p[0] + x_left_offset + 1, p[1] + y_top_offset + 1)
     output += '" />'
   output += '<polyline fill="none" stroke="{}" stroke-width="{}" points="'.format(bordercolor, borderw)
-  chartborderpoints = '{},{} {},{} {},{} {},{} {},{}'.format(x_left_offset, y_top_offset, x_left_offset, h - y_bottom_offset, w - x_right_offset, h - y_bottom_offset, w - x_right_offset, y_top_offset, x_left_offset, y_top_offset)
+  chartborderpoints = '{},{} {},{} {},{} {},{} {},{}'.format(x_left_offset + 1, y_top_offset + 1, x_left_offset + 1, h - y_bottom_offset - 1, w - x_right_offset - 1, h - y_bottom_offset - 1, w - x_right_offset - 1, y_top_offset + 1, x_left_offset + 1, y_top_offset + 1)
   output += chartborderpoints
   output += '" />'
   if legend_enable:
